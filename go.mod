@@ -1,4 +1,4 @@
-module zlogger
+module github.com/hellowords/zlogger
 
 go 1.16
 
