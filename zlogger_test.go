@@ -21,7 +21,7 @@ func TestNewLogger(t *testing.T) {
 
 func TestLogger_Default(t *testing.T) {
 	logger := NewLogger(Options{
-		LogPath:    "",
+		LogPath:    "storage/logs",
 		FileName:   "",
 		MaxSize:    10,
 		MaxAge:     10,
@@ -30,7 +30,7 @@ func TestLogger_Default(t *testing.T) {
 
 	defer logger.Sync()
 
-	logger.Default().Info("Hello Drinke9!")
+	logger.Default().Info("HelloWords!")
 	logger.Default().Debug("this is debug", zap.Time("loadTime", time.Now()))
 }
 

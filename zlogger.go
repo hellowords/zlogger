@@ -2,6 +2,7 @@ package zlogger
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/natefinch/lumberjack"
@@ -47,20 +48,30 @@ func (l *Logger) Default() *zap.Logger {
 	return load.(*zap.Logger)
 }
 
+// getDefaultDriver 获取默认logDriver
 func (l *Logger) getDefaultDriver() *zap.Logger {
-	fileName := "app.log"
+	fileName := "app"
+	var path = l.LogPath
+	if ok := strings.HasSuffix(l.LogPath, "/"); ok {
+		path = l.LogPath[0 : len(l.LogPath)-1]
+	}
 	if l.FileName != "" {
 		fileName = l.FileName
 	}
-	defaultWriter := getLogWriter(fileName, l.MaxSize, l.MaxBackups, l.MaxAge)
+	defaultWriter := getLogWriter(fmt.Sprintf("%s/%s.log", path, fileName), l.MaxSize, l.MaxBackups, l.MaxAge)
 	defaultEncoder := getEncoder()
 	core := zapcore.NewCore(defaultEncoder, defaultWriter, zapcore.DebugLevel)
 
 	return zap.New(core, zap.AddCaller())
 }
 
-func (l *Logger) setDriver(driver string) *zap.Logger {
-	driverWriter := getLogWriter(fmt.Sprintf("%s.log", driver), l.MaxSize, l.MaxBackups, l.MaxAge)
+// setDriver 设置新的logDriver
+func (l *Logger) setDriver(name string) *zap.Logger {
+	var path = l.LogPath
+	if ok := strings.HasSuffix(l.LogPath, "/"); ok {
+		path = l.LogPath[0 : len(l.LogPath)-1]
+	}
+	driverWriter := getLogWriter(fmt.Sprintf("%s/%s.log", path, name), l.MaxSize, l.MaxBackups, l.MaxAge)
 	driverEncoder := getEncoder()
 	core := zapcore.NewCore(driverEncoder, driverWriter, zap.DebugLevel)
 
