@@ -1,4 +1,4 @@
-# logger 
+# zlogger 
 
 使用 `github.com/uber-go/zap`日志库封装
 
