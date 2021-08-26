@@ -16,6 +16,7 @@
 ```go
 
 logger := NewLogger(Options{
+	Mode:       "dev" //只有在Mode为dev的时候会将日志同时输出到文件和控制台中
 	LogPath:    "log/your/save/path",
 	FileName:   "app",
 	MaxSize:    10,

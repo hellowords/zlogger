@@ -21,6 +21,7 @@ func TestNewLogger(t *testing.T) {
 
 func TestLogger_Default(t *testing.T) {
 	logger := NewLogger(Options{
+		Mode:       "dev",
 		LogPath:    "storage/logs",
 		FileName:   "",
 		MaxSize:    10,
@@ -36,6 +37,7 @@ func TestLogger_Default(t *testing.T) {
 
 func TestLogger_Store(t *testing.T) {
 	logger := NewLogger(Options{
+		//Mode:       "dev",
 		LogPath:    "",
 		FileName:   "",
 		MaxSize:    10,

@@ -2,6 +2,7 @@ package zlogger
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 
@@ -16,6 +17,7 @@ type Logger struct {
 }
 
 type Options struct {
+	Mode       string `json:"mode"`
 	LogPath    string `json:"log_path" yaml:"log_path"`
 	FileName   string `json:"file_name"`
 	MaxSize    int    `json:"max_size"`
@@ -60,7 +62,11 @@ func (l *Logger) getDefaultDriver() *zap.Logger {
 	}
 	defaultWriter := getLogWriter(fmt.Sprintf("%s/%s.log", path, fileName), l.MaxSize, l.MaxBackups, l.MaxAge)
 	defaultEncoder := getEncoder()
-	core := zapcore.NewCore(defaultEncoder, defaultWriter, zapcore.DebugLevel)
+	writeSyncer := zapcore.NewMultiWriteSyncer(defaultWriter)
+	if l.Options.Mode == "dev" {
+		writeSyncer = zapcore.NewMultiWriteSyncer(defaultWriter, zapcore.AddSync(os.Stdout))
+	}
+	core := zapcore.NewCore(defaultEncoder, writeSyncer, zapcore.DebugLevel)
 
 	return zap.New(core, zap.AddCaller())
 }
@@ -73,7 +79,11 @@ func (l *Logger) setDriver(name string) *zap.Logger {
 	}
 	driverWriter := getLogWriter(fmt.Sprintf("%s/%s.log", path, name), l.MaxSize, l.MaxBackups, l.MaxAge)
 	driverEncoder := getEncoder()
-	core := zapcore.NewCore(driverEncoder, driverWriter, zap.DebugLevel)
+	writeSyncer := zapcore.NewMultiWriteSyncer(driverWriter)
+	if l.Options.Mode == "dev" {
+		writeSyncer = zapcore.NewMultiWriteSyncer(driverWriter, zapcore.AddSync(os.Stdout))
+	}
+	core := zapcore.NewCore(driverEncoder, writeSyncer, zap.DebugLevel)
 
 	return zap.New(core, zap.AddCaller())
 }
